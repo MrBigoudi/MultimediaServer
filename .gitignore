@@ -1,0 +1,83 @@
+# Compiled class files
+*.class
+
+# Bytecode directories
+bin/
+target/
+
+# Compiled Java files
+*.jar
+*.war
+*.ear
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.war
+*.ear
+
+# Maven or Gradle specific files and directories
+/.mvn
+/.gradle
+
+# IntelliJ IDEA project files
+.idea/
+*.iml
+
+# Eclipse project files
+.settings/
+.classpath
+.project
+.cproject
+.launch
+
+# Compiled object files
+*.o
+*.out
+*.exe
+
+# Compiled shared/dynamic library files
+*.so
+*.dll
+*.dylib
+
+# Build directories
+bin/
+build/
+Debug/
+Release/
+x64/
+x86/
+__pycache__/
+
+# Compiled or generated files
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+CMakeScripts/
+
+# Visual Studio files
+*.suo
+*.user
+*.sln
+*.vcproj
+*.vcxproj
+*.dbproj
+*.userprefs
+
+# Sublime Text project files
+.sublime-project
+
+# Xcode files
+*.xcodeproj/
+xcuserdata/
+project.xcworkspace/
+
+# IDE-specific files and directories
+.vscode/
+.idea/
+*.cbp
+*.layout
+*.depend

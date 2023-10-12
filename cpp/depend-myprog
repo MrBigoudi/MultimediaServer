@@ -1,0 +1,4 @@
+main.o: main.cpp Multimedia.hpp MultimediaManager.hpp Group.hpp Photo.hpp \
+ Video.hpp Film.hpp
+Photo.o: Photo.cpp Photo.hpp Multimedia.hpp
+Video.o: Video.cpp Video.hpp Multimedia.hpp
