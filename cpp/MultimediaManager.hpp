@@ -6,8 +6,12 @@
 #include "Photo.hpp"
 #include "Video.hpp"
 #include "Film.hpp"
+#include "Factory.hpp"
 
+#include <cstdlib>
+#include <fstream>
 #include <map>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <sstream>
@@ -32,6 +36,11 @@ enum MultimediaManagerMap{MULTIMEDIAS, GROUPS};
 using GroupMap = std::map<std::string, GroupPointer>;
 
 /**
+ * A type representing a smart pointer to the multimedia manager class
+*/
+using MultimediaManagerPointer = std::shared_ptr<MultimediaManager>;
+
+/**
  * A class that will handle all the objects (groups and multimedias)
 */
 class MultimediaManager{
@@ -45,6 +54,11 @@ class MultimediaManager{
          * A map of all the groups
         */
         GroupMap _Groups;
+
+        /**
+         * The single instance of the MultimediaManager singleton
+        */
+        static MultimediaManagerPointer _Instance;
 
     private:
         /**
@@ -81,11 +95,23 @@ class MultimediaManager{
             }
         }
 
-    public:
+    private:
         /**
          * A basic constructor
         */
         MultimediaManager(){}
+
+    public:
+        /**
+         * Get the single instance of the MultimediaManager
+         * @return The instance of the class
+        */
+        static MultimediaManagerPointer getInstance(){
+            if(!_Instance){
+                _Instance = MultimediaManagerPointer(new MultimediaManager);
+            }
+            return _Instance;
+        }
 
         /**
          * A basic destructor
@@ -118,6 +144,28 @@ class MultimediaManager{
             PhotoPointer photo(new Photo(name, path, latitude, longitude));
             _Multimedias[name] = photo;
             return photo;
+        }
+
+        /**
+         * Add a multimedia to the map and return it
+         * @param mult THe multimedia to add
+         * @return The multimedia
+        */
+        MultimediaPointer addMultimedia(MultimediaPointer mult){
+            if(!mult){
+                std::cerr << "Can't add an empty object!" << std::endl;
+                return nullptr;
+            }
+            std::string name = mult->getName();
+            if(doesNameExist(name, MULTIMEDIAS)){
+                std::cerr << "An object with the name: " << name
+                            << " already exists in the Multimedias map !\n"
+                            << "\tObject will not be added, returning a nullptr instead!" 
+                            << std::endl;
+                return nullptr;
+            }
+            _Multimedias[name] = mult;
+            return mult;
         }
 
         /**
@@ -188,7 +236,7 @@ class MultimediaManager{
             for(auto it : _Multimedias){
                 auto val = it.second;
                 val->print(stream);
-                stream << "/";
+                stream << "   /   ";
             }
         }
 
@@ -260,6 +308,101 @@ class MultimediaManager{
                     break;
                 }
             }
+        }
+
+        /**
+         * A function to serialize the multimedia manager
+         * @param filePath The file in which to write
+         * @return True if all went well
+        */
+        bool write(std::string filePath) const {
+            std::ofstream f(filePath);
+            if (f.is_open()) {
+                // begining of the file
+                f << "{\n\"class\":\"MultimediaManager\",\n";
+                writeMultimedias(f);
+                f << "\n}";
+                f.close();
+            } else {
+                std::cerr << "Failed to open the file: " << filePath << "!" << std::endl;
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * A function to deserialize the multimedia manager
+         * @param filePath The file from which to read
+         * @return True if all went well
+        */
+        bool read(std::string filePath){
+            std::ifstream f(filePath);
+            if (f.is_open()) {
+                std::string line = "";
+                size_t idPos = 0;
+
+                std::string className = "";
+                std::getline(f, line);
+                std::getline(f,line);
+                std::getline(f, line);
+
+                while(std::getline(f, line)){
+                    // get separator
+                    idPos = line.find(":");
+
+                    // check if not found the last class
+                    if(idPos != std::string::npos){
+                        // get the class name
+                        className = line.substr(idPos+2, line.size()-2-(idPos+2));
+                        // create the correct class
+                        MultimediaPointer m = nullptr;
+                        if(className.compare("Photo") == 0){
+                            m = Factory::readPhoto(f);
+                        } else if(className.compare("Video") == 0){
+                            m = Factory::readVideo(f);
+                        } else if(className.compare("Film") == 0){
+                            m = Factory::readFilm(f);
+                        } else {
+                            std::cerr << "Class: " << className <<" not recognized in the file: " << filePath << "!" << std::endl;
+                            f.close();
+                            return false;
+                        }
+                        // check if the Factory creation went well
+                        if(!m){
+                            std::cerr << "Failed to read the current multimedia!" << std::endl;
+                            f.close();
+                            return false;
+                        }
+                        // add the multimedia to the manager
+                        addMultimedia(m);
+                        // read the comma at the end of the current object
+                        std::getline(f, line);
+                    }
+                }
+                f.close();
+                return true;
+            } else {
+                std::cerr << "Failed to open the file: " << filePath << "!" << std::endl;
+                return false;
+            }
+        }
+
+    private:
+        /**
+         * Serialize the multimedia map
+         * @param f The ofstream
+        */
+        void writeMultimedias(std::ofstream& f) const {
+            f << "\"multimedias\":[\n";
+            for (auto it = _Multimedias.begin(); it != _Multimedias.end(); it++) {
+                it->second->write(f);
+                // add a comma if not the last element
+                if (std::next(it) != _Multimedias.end()) {
+                    f << "\n,\n";
+                }
+            }
+            f << "\n]";
         }
 
 };

@@ -81,3 +81,4 @@ project.xcworkspace/
 *.cbp
 *.layout
 *.depend
+depend-*

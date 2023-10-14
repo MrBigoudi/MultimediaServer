@@ -19,6 +19,7 @@ using VideoPointer = std::shared_ptr<Video>;
 class Video : public Multimedia{
 
     friend class MultimediaManager;
+    friend class Factory;
     
     private:
         /**
@@ -107,6 +108,19 @@ class Video : public Multimedia{
         void play() const override{
             std::string command = _VIDEO_MANAGER + " " + _Path + "&";
             system(command.data());
+        }
+
+    private:
+        /**
+         * A function to serialize the multimedia
+         * @param f The stream
+        */
+        void write(std::ofstream& f) const override {
+            Multimedia::write(f);
+            f << "{\"class\":\"Video\",\n" 
+              << "\"name\":\"" << _Name << "\",\n"
+              << "\"path\":\"" << _Path << "\",\n"
+              << "\"length\":" << _Length << "}";
         }
 
 };

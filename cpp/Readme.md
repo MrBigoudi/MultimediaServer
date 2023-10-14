@@ -140,4 +140,11 @@ Question bonus implémentée
 
 Décommenter le `#define __VERSION_PRE_SOCKET__` et commenter `#define __VERSION_POST_SOCKET__` pour avoir la version du `main` des questions précédentes et inversement pour les version du `main` des questions suivantes.
 
-Ajout de la map de functions pour représenter les commandes.
+Ajout de la map de functions pour représenter les commandes. Ajout d'une commande pour lire la base de donnée.
+
+## 12e étape
+
+Pour que MultimediaManager soit la seule classe capable de sérialiser des multimédias, je la met en tant que `friend` de Multimedia.
+De plus je transforme mon manager en singleton pour être sûr que l'utilisateur ne puisse pas l'hériter ou en créer d'autres.
+
+Une manière de contourner cette restriction serait d'hériter de Multimedia et de redéfinir les méthodes write et read mais dans ce cas, étant donné que ces méthodes sont vides dans la classe Multimedia, cela ne servirait pas à grand chose.

@@ -2,12 +2,13 @@
 #define __MULTIMEDIA_HPP__
 
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <fstream>
 #include <memory>
 
 class Multimedia;
-
+class MultimediaManager;
 /**
  * A type representing a smart pointer of a Multimedia
 */
@@ -19,6 +20,8 @@ using MultimediaPointer = std::shared_ptr<Multimedia>;
 */
 class Multimedia{
 
+    friend class MultimediaManager;
+
     protected:
         /**
          * The name of the multimedia object
@@ -29,6 +32,7 @@ class Multimedia{
          * Path to file associated to the multimedia object
         */
         std::string _Path = "";
+
 
     protected:
         /**
@@ -122,6 +126,15 @@ class Multimedia{
          * A purely virtual method to play the multimedia
         */
         virtual void play() const = 0;
+
+    protected:
+        /**
+         * A function to serialize the multimedia
+         * @param f The stream
+        */
+        virtual void write(std::ofstream& f) const {
+
+        }
 };
 
 #endif

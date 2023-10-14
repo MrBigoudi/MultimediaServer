@@ -1,8 +1,10 @@
 #ifndef __FILM_HPP__
 #define __FILM_HPP__
 
+#include "Multimedia.hpp"
 #include "Video.hpp"
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 
 class Film;
@@ -19,6 +21,7 @@ using FilmPointer = std::shared_ptr<Film>;
 class Film : public Video{
 
     friend class MultimediaManager;
+    friend class Factory;
 
     private:
         /**
@@ -137,6 +140,41 @@ class Film : public Video{
             }
             stream << _Chapters[_NbChapters-1] << "]";
         }
+
+    private:
+
+        /**
+         * A function to serialize the multimedia
+         * @param f The stream
+        */
+        void write(std::ofstream& f) const override {
+            Multimedia::write(f);
+            f << "{\"class\":\"Film\",\n" 
+              << "\"name\":\"" << _Name << "\",\n"
+              << "\"path\":\"" << _Path << "\",\n"
+              << "\"length\":\"" << _Length << "\",\n"
+              << "\"nbChapters\":\"" << _NbChapters << "\",\n";
+            writeChapters(f);
+            f << "}";
+        }
+
+    private:
+        /**
+         * A function to serialize the chapters
+         * @param f The stream
+        */
+        void writeChapters(std::ofstream& f) const {
+            f << "\"chapters\":\"[";
+            for(int i=0; i<_NbChapters; i++){
+                f << _Chapters[i];
+                // if not last, add comma
+                if(i != _NbChapters-1){
+                    f << ",";
+                }
+            }
+            f << "]\"";
+        }
+
 };
 
 #endif

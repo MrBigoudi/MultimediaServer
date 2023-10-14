@@ -40,7 +40,7 @@ int main() {
   std::cout << "Client connected to " << HOST << ":" << PORT << std::endl;
 
   while (std::cin) {
-    std::cout << "\n\nPlease type a command (PLAY, SERACH, GETDB, QUIT) followed by the name of the file to open" << std::endl;
+    std::cout << "\n\nPlease type a command (PLAY, SEARCH, GETDB, SAVEDB, QUIT) followed by the name of the file to open" << std::endl;
     std::cout << "ex: PLAY Film\n\n" << std::endl;
     std::cout << "Request: ";
     std::string request, response;

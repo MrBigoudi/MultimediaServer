@@ -2,8 +2,10 @@
 #define __PHOTO_HPP__
 
 #include "Multimedia.hpp"
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 class Photo;
 
@@ -19,6 +21,7 @@ using PhotoPointer = std::shared_ptr<Photo>;
 class Photo : public Multimedia{
 
     friend class MultimediaManager;
+    friend class Factory;
 
     private:
         /**
@@ -150,6 +153,21 @@ class Photo : public Multimedia{
         void play() const override{
             std::string command = _PHOTO_MANAGER + " " + _Path + "&";
             system(command.data());
+        }
+
+    private:
+
+        /**
+         * A function to serialize the multimedia
+         * @param f The stream
+        */
+        void write(std::ofstream& f) const override {
+            Multimedia::write(f);
+            f << "{\"class\":\"Photo\",\n" 
+              << "\"name\":\"" << _Name << "\",\n"
+              << "\"path\":\"" << _Path << "\",\n"
+              << "\"latitude\":\"" << _Latitude << "\",\n"
+              << "\"longitude\":\"" << _Longitude << "\"}";
         }
 
 };

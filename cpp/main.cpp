@@ -185,10 +185,11 @@ int main(int argc, const char* argv[]){
 #include "tcpserver.h"
 #include <map>
 
-const int PORT = 3331;
+static const int PORT = 3331;
+static const std::string DB = "media/db.json";
 
 using Command = std::function<bool(std::string const& request, std::string& response, MultimediaManager const& manager)>;
-enum Commands{CMD_PLAY, CMD_SEARCH, CMD_BAD, CMD_GET_DB};
+enum Commands{CMD_PLAY, CMD_SEARCH, CMD_BAD, CMD_GET_DB, CMD_SAVE_DB};
 
 /* SPECIFICATIONS */
 // the different commands
@@ -196,6 +197,7 @@ bool cmdPlay(std::string const& request, std::string& response, MultimediaManage
 bool cmdSearch(std::string const& request, std::string& response, MultimediaManager const& manager);
 bool cmdBad(std::string const& request, std::string& response, MultimediaManager const& manager);
 bool cmdGetDB(std::string const& request, std::string& response, MultimediaManager const& manager);
+bool cmdSaveDB(std::string const& request, std::string& response, MultimediaManager const& manager);
 // the initializer for the map of commands
 std::map<Commands, Command> initCommands();
 // get the command given the request
@@ -216,8 +218,8 @@ Commands getCommand(std::string const& request){
 
     if(cmd.compare("PLAY") == 0) return CMD_PLAY;
     if(cmd.compare("SEARCH") == 0) return CMD_SEARCH;
-    if(cmd.compare("GETDB") == 0) return CMD_SEARCH;
-    ss.clear();
+    if(cmd.compare("GETDB") == 0) return CMD_GET_DB;
+    if(cmd.compare("SAVEDB") == 0) return CMD_SAVE_DB;
     return CMD_BAD;
 }
 
@@ -245,6 +247,7 @@ std::map<Commands, Command> initCommands(){
     map[CMD_SEARCH] = cmdSearch;
     map[CMD_BAD] = cmdBad;
     map[CMD_GET_DB] = cmdGetDB;
+    map[CMD_SAVE_DB] = cmdSaveDB;
     return map;
 }
 
@@ -258,6 +261,19 @@ bool cmdGetDB(std::string const& request, std::string& response, MultimediaManag
     manager.displayDB(result);
     response = result.str();
     return true;
+}
+
+bool cmdSaveDB(std::string const& request, std::string& response, MultimediaManager const& manager){
+    std::stringstream result;
+    bool success = manager.write(DB);
+
+    if(success){
+        response = "Successfully saved the db in " + DB + "!";
+        return true;
+    }  
+
+    response = "Failed to save the db in " + DB + "!";
+    return false;
 }
 
 bool cmdSearch(std::string const& request, std::string& response, MultimediaManager const& manager){
@@ -293,13 +309,14 @@ bool cmdPlay(std::string const& request, std::string& response, MultimediaManage
 
 int main(int agrc, char** argv){
     // init the database
-    MultimediaManager* m = new MultimediaManager();
-    int chapters[3] = {1,1,3};
-    auto f1 = m->addFilm("Film", "media/lavaSimulation.mp4", 600,
-                            3, chapters);
-    auto p1 = m->addPhoto("Photo", "media/profilPicture.jpg", 640, 720);
-    auto g1 = m->addGroup("G1");
-    auto g2 = m->addGroup("G2");
+    MultimediaManagerPointer m = MultimediaManager::getInstance();
+    // int chapters[3] = {1,1,3};
+    // auto f1 = m->addFilm("Film", "media/lavaSimulation.mp4", 600,
+    //                         3, chapters);
+    // auto p1 = m->addPhoto("Photo", "media/profilPicture.jpg", 640, 720);
+    // auto g1 = m->addGroup("G1");
+    // auto g2 = m->addGroup("G2");
+    m->read(DB);
 
     // create the map of commands
     std::map<Commands, Command> commands = initCommands();
@@ -327,11 +344,10 @@ int main(int agrc, char** argv){
     }
 
     // free the database
-    f1.reset();
-    p1.reset();
-    g1.reset();
-    g2.reset();
-    delete(m);
+    // f1.reset();
+    // p1.reset();
+    // g1.reset();
+    // g2.reset();
 
     exit(EXIT_SUCCESS);
 }
