@@ -6,6 +6,8 @@
 //#define __VERSION_PRE_SOCKET__
 #define __VERSION_POST_SOCKET__
 
+#ifdef __VERSION_PRE_SOCKET__
+
 #include <cstdlib>
 #include <iostream>
 #include "Multimedia.hpp"
@@ -15,7 +17,6 @@
 #include "Film.hpp"
 #include "Group.hpp"
 
-#ifdef __VERSION_PRE_SOCKET__
 int main(int argc, const char* argv[]){
 
     /*
@@ -178,6 +179,10 @@ int main(int argc, const char* argv[]){
 #endif
 
 #ifdef __VERSION_POST_SOCKET__
+
+#include <cstdlib>
+#include <iostream>
+#include "MultimediaManager.hpp"
 
 #include <memory>
 #include <string>
