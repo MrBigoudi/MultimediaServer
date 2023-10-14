@@ -9,11 +9,16 @@
 #include <vector>
 #include <sstream>
 
+class MultimediaManager;
+
 /**
  * A static class to create multimedias of the different types
 */
 class Factory{
-    public:
+    friend class MultimediaManager;
+
+
+    private:
         /**
          * Create a Photo given an ifstream
          * @param f The file to read from
