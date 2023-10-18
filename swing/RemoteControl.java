@@ -7,24 +7,49 @@ import javax.swing.*;
 public class RemoteControl extends JFrame{
 
     /**
-     * The first button
+     * The help button
      */
-    ButtonAction _Button1;
+    ButtonAction _ButtonHelp = null;
 
     /**
-     * The second button
+     * The save button
      */
-    ButtonAction _Button2;
+    ButtonAction _ButtonSave = null;
+
+    /**
+     * The connect button
+     */
+    ButtonAction _ButtonConnect = null;
+
+    /**
+     * The play button
+     */
+    ButtonAction _ButtonPlay = null;
+
+    /**
+     * The search button
+     */
+    ButtonAction _ButtonSearch = null;
+
+    /**
+     * The get database button
+     */
+    ButtonAction _ButtonGetDB = null;
 
     /**
      * The quit button
      */
-    JButton _QuitButton;
+    JButton _ButtonQuit = null;
 
     /**
      * The text area
      */
-    JTextArea _TextZone;
+    JTextArea _TextZone = null;
+
+    /**
+     * The client linked to this control
+     */
+    Client _Client = null;
 
     /**
      * Set the class version
@@ -67,25 +92,34 @@ public class RemoteControl extends JFrame{
     private void initButtons(){
         JPanel panel = new JPanel();
         // create the buttons
-        _Button1 = new ButtonAction("Button1", this);
-        _Button2 = new ButtonAction("Button2", this);
-        _QuitButton = new JButton("Quit");
+        _ButtonHelp    = new HelpButton("Help", this);
+        _ButtonConnect = new ConnectButton("Connect", this);
+        _ButtonPlay    = new CommandButton("Play", this, Command.PLAY);
+        _ButtonSearch  = new CommandButton("Search", this, Command.SEARCH);
+        _ButtonGetDB   = new CommandButton("GetDB", this, Command.GETDB);
+        _ButtonSave    = new CommandButton("Save", this, Command.SAVEDB);
+        _ButtonQuit    = new JButton("Quit");
         // add the buttons
-        panel.add(new JButton(_Button1));
-        panel.add(new JButton(_Button1));
-        panel.add(_QuitButton);
+        panel.add(new JButton(_ButtonHelp));
+        panel.add(new JButton(_ButtonConnect));
+        panel.add(new JButton(_ButtonPlay));
+        panel.add(new JButton(_ButtonSearch));
+        panel.add(new JButton(_ButtonGetDB));
+        panel.add(new JButton(_ButtonSave));
+        panel.add(_ButtonQuit);
         // add the actions
-        _QuitButton.addActionListener(e -> quit());
+        _ButtonQuit.addActionListener(e -> quit());
 
         // add the panel to the main layout
         add(panel, BorderLayout.SOUTH);
     }
 
     /**
-     * Add a line to the text zone
+     * Set a text to the text zone
+     * @param text The text to send
      */
-    public void addLine(){
-        _TextZone.append("\n");
+    public void setText(String text){
+        _TextZone.setText(text);
     }
 
     /**
@@ -95,14 +129,16 @@ public class RemoteControl extends JFrame{
         // init the menu bar
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
-        menu.add(new JMenuItem(_Button1));
-        menu.add(new JMenuItem(_Button2));
+        menu.add(new JMenuItem(_ButtonHelp));
+        menu.add(new JMenuItem(_ButtonConnect));
+        menu.add(new JMenuItem(_ButtonSave));
         menuBar.add(menu);
         setJMenuBar(menuBar);
         // init the toolbar
         JToolBar toolBar = new JToolBar();
-        toolBar.add(_Button1);
-        toolBar.add(_Button2);
+        toolBar.add(_ButtonHelp);
+        toolBar.add(_ButtonConnect);
+        toolBar.add(_ButtonSave);
         add(toolBar, BorderLayout.NORTH);
     }
 
@@ -114,10 +150,52 @@ public class RemoteControl extends JFrame{
     }
 
     /**
-     * Entry point of the program
+     * Connect a client
      */
-    public static void main(String argv[]){
-        new RemoteControl();
+    public void connect(){
+        String host = Client.DEFAULT_HOST;
+        int port = Client.DEFAULT_PORT;
+        _Client = Client.connect(host, port);
+        setText("Client connected to "+host+":"+port);
     }
 
+    /**
+     * Get the command name
+     * @param command
+     * @param name The argument of the command
+     * @return The command as a string
+     */
+    private String getCommand(Command command, String name){
+        switch(command){
+            case QUIT:
+                return "QUIT";
+            case PLAY:
+                return "PLAY " + name;
+            case SEARCH:
+                return "SEARCH " + name;
+            case GETDB:
+                return "GETDB";
+            case SAVEDB:
+                return "SAVEDB";
+        }
+        return "";
+    }
+
+    /**
+     * Send a command to the client
+     * @param command The command type
+     * @param name The argument of the command
+     */
+    public void sendCommand(Command command, String name){
+        if(_Client == null){
+            setText("Client must be connected before sending a command!");
+            return;
+        }
+        if(command == Command.QUIT){
+            quit();
+        }
+        String request = getCommand(command, name);
+        String response = _Client.send(request);
+        setText("\n\nResponse: " + response + "\n\n");
+    }
 }

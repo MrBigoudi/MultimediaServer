@@ -1,7 +1,6 @@
-import java.awt.event.*;
 import javax.swing.*;
 
-public class ButtonAction extends AbstractAction {
+public abstract class ButtonAction extends AbstractAction {
 
     /**
      * The main window from which the button is attached to
@@ -16,11 +15,6 @@ public class ButtonAction extends AbstractAction {
     ButtonAction(String name, RemoteControl window){
         super(name);
         _Window = window;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent arg0) {
-        _Window.addLine();
     }
     
 }
