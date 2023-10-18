@@ -100,12 +100,9 @@ public class RemoteControl extends JFrame{
         _ButtonSave    = new CommandButton("Save", this, Command.SAVEDB);
         _ButtonQuit    = new JButton("Quit");
         // add the buttons
-        panel.add(new JButton(_ButtonHelp));
-        panel.add(new JButton(_ButtonConnect));
         panel.add(new JButton(_ButtonPlay));
         panel.add(new JButton(_ButtonSearch));
         panel.add(new JButton(_ButtonGetDB));
-        panel.add(new JButton(_ButtonSave));
         panel.add(_ButtonQuit);
         // add the actions
         _ButtonQuit.addActionListener(e -> quit());
