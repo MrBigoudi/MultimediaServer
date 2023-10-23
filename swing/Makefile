@@ -21,6 +21,9 @@ SOURCES = *.java
 #
 JC = javac
 
+DOCDIR = doc
+DOXYFILE = Doxyfile
+
 #
 # Options du compilateur Java
 #
@@ -41,9 +44,16 @@ classes: $(SOURCES:.java=.class)
 
 clean:
 	-@$(RM) *.class 1>/dev/null 2>&1
+	-@$(RM) -r ${DOCDIR} 1>/dev/null 2>&1
   
 tar:
 	tar cvf ${PROG}.tar.gz ${SOURCES}
+
+doc: ${DOXYFILE}
+	doxygen ${DOXYFILE}
+
+${DOXYFILE}:
+	doxygen -g ${DOXYFILE}
 
 
 ###########################################

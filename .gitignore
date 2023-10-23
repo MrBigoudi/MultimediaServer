@@ -82,3 +82,4 @@ project.xcworkspace/
 *.layout
 *.depend
 depend-*
+doc/*

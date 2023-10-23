@@ -150,3 +150,7 @@ De plus je transforme mon manager en singleton pour être sûr que l'utilisateur
 Une manière de contourner cette restriction serait d'hériter de Multimedia et de redéfinir la méthode write mais dans ce cas, étant donné que cette méthode est vide dans la classe Multimedia, cela ne servirait pas à grand chose.
 
 Pour faciliter les choses, j'utilise une `Factory` qui crée les multimedias en prenant en paramètre le fichier à lire. Je rend également les fonctions de cette classe privés pour que le manager soit le seul à pouvoir l'utiliser.
+
+## Howto
+
+Pour générer la documentation, utiliser la commande `make doc`.

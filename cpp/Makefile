@@ -12,6 +12,9 @@
 SERVER = server.exe
 CLIENT = client.exe
 
+DOCDIR = doc
+DOXYFILE = Doxyfile
+
 #
 # Fichiers sources (NE PAS METTRE les .h ni les .o seulement les .cpp)
 #
@@ -71,6 +74,7 @@ clean:
 
 clean-all: clean
 	-@$(RM) ${SERVER} ${CLIENT} 1>/dev/null 2>&1
+	-@$(RM) -r ${DOCDIR} 1>/dev/null 2>&1
   
 tar:
 	tar cvf client_server.tar.gz ${CLIENT_SOURCES} ${SERVER_SOURCES}
@@ -83,6 +87,12 @@ depend-${SERVER}:
 depend-${CLIENT}:
 	${CXX} ${CXXFLAGS} -MM ${CLIENT_SOURCES} > depend-${CLIENT}
 
+
+doc: ${DOXYFILE}
+	doxygen ${DOXYFILE}
+
+${DOXYFILE}:
+	doxygen -g ${DOXYFILE}
 
 ###########################################
 #
